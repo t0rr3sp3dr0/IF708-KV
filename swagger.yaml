@@ -1,0 +1,111 @@
+swagger: '2.0'
+info:
+  version: "1"
+  title: "IF708-KV"
+  description: "Public API"
+host: "localhost"
+tags:
+  - name: "anyone"
+    description: "No privilege required"
+schemes:
+  - "http"
+paths:
+  /{key}:
+    get:
+      description: |
+        Gets object.
+      tags:
+        - "anyone"
+      parameters:
+        - name: "key"
+          description: "Key of object to return"
+          required: true
+          in: "path"
+          type: "string"
+      responses:
+        200:
+          description: "Successful response"
+          schema:
+            $ref: "#/definitions/Value"
+    post:
+      description: |
+        Posts object.
+      tags:
+        - "anyone"
+      parameters:
+        - name: "key"
+          description: "Key of object to create"
+          required: true
+          in: "path"
+          type: "string"
+        - name: "value"
+          description: "Value of object to create."
+          required: true
+          in: "body"
+          schema:
+            $ref: "#/definitions/Value"
+      responses:
+        200:
+          description: "Successful response"
+    put:
+      description: |
+        Puts object.
+      tags:
+        - "anyone"
+      parameters:
+        - name: "key"
+          description: "Key of object to update"
+          required: true
+          in: "path"
+          type: "string"
+        - name: "value"
+          description: "Value of object to create."
+          required: true
+          in: "body"
+          schema:
+            $ref: "#/definitions/Value"
+      responses:
+        200:
+          description: "Successful response"
+    delete:
+      description: |
+        Deletes object.
+      tags:
+        - "anyone"
+      parameters:
+        - name: "key"
+          description: "Key of object to delete"
+          required: true
+          in: "path"
+          type: "string"
+      responses:
+        200:
+          description: "Successful response"
+definitions:
+  Value:
+    type: object
+    properties:
+      type:
+        description: Type of Value.
+        type: string
+        enum:
+          - INTEGER
+          - STRING
+          - INTEGER_ARRAY
+          - STRING_ARRAY
+      integer:
+        description: Integer Literal.
+        type: integer
+      string:
+        description: String Literal.
+        type: string
+      integerArray:
+          description: Integer Array.
+          type: array
+          items:
+            type: integer
+      stringArray:
+          description: String Array.
+          type: array
+          items:
+            type: string
