@@ -5,6 +5,7 @@
 
 module Types
     ( Value (..),
+    zero,
     ) where
 
 import Data.Aeson hiding (Value) -- ((.:), (.:?), FromJSON (..), genericToJSON, ToJSON (..), genericParseJSON)
@@ -12,7 +13,7 @@ import Data.Aeson.Types (Options (..), defaultOptions)
 import Data.List (stripPrefix)
 import Data.Function ((&))
 import Data.Maybe (fromMaybe)
-import Data.Text (Text)
+import Data.Text (Text, empty)
 import qualified Data.Text as T
 import GHC.Generics (Generic)
 
@@ -23,6 +24,9 @@ data Value = Value
     , integerArray :: [Int] -- ^ Integer Array.
     , stringArray :: [Text] -- ^ String Array.
     } deriving (Show, Eq, Generic)
+
+zero :: Value
+zero = Value empty 0 empty [] []
 
 instance FromJSON Value where
     parseJSON = withObject "Value" $ \v -> Value
