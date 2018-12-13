@@ -56,10 +56,10 @@ lookupEither key assocs =
 
 -- | Servant type-level API, generated from the Swagger spec for KV.
 type KVAPI
-        =    Capture "key" Text :> Verb 'GET 200 '[JSON] Value                        -- 'keyGet' route
-        :<|> Capture "key" Text :> ReqBody '[JSON] Value :> Verb 'POST 200 '[JSON] () -- 'keyPost' route
-        :<|> Capture "key" Text :> ReqBody '[JSON] Value :> Verb 'PUT 200 '[JSON] ()  -- 'keyPut' route
-        :<|> Capture "key" Text :> Verb 'DELETE 200 '[JSON] ()                        -- 'keyDelete' route
+        =    Capture "key" Text :> Verb 'GET 200 '[JSON] Value                           -- 'keyGet' route
+        :<|> Capture "key" Text :> ReqBody '[JSON] Value :> Verb 'POST 200 '[JSON] Value -- 'keyPost' route
+        :<|> Capture "key" Text :> ReqBody '[JSON] Value :> Verb 'PUT 200 '[JSON] Value  -- 'keyPut' route
+        :<|> Capture "key" Text :> Verb 'DELETE 200 '[JSON] Value                        -- 'keyDelete' route
 
 -- | Server or client configuration, specifying the host and port to query or serve on.
 data ServerConfig = ServerConfig
@@ -121,10 +121,10 @@ formatSeparatedQueryList char = T.intercalate (T.singleton char) . map toQueryPa
 -- is a backend that executes actions by sending HTTP requests (see @createKVClient@). Alternatively, provided
 -- a backend, the API can be served using @runKVServer@.
 data KVBackend m = KVBackend
-    { keyGet :: Text -> m Value        -- ^ Gets object.
-    , keyPost :: Text -> Value -> m () -- ^ Posts object.
-    , keyPut :: Text -> Value -> m ()  -- ^ Puts object.
-    , keyDelete :: Text -> m ()        -- ^ Deletes object.
+    { keyGet :: Text -> m Value           -- ^ Gets object.
+    , keyPost :: Text -> Value -> m Value -- ^ Posts object.
+    , keyPut :: Text -> Value -> m Value  -- ^ Puts object.
+    , keyDelete :: Text -> m Value        -- ^ Deletes object.
     }
 
 type KVClient = ClientM
