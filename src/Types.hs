@@ -59,4 +59,5 @@ instance ToJSON Value where
                                                  "string"       -> "string"       .= string
                                                  "integerArray" -> "integerArray" .= integerArray
                                                  "stringArray"  -> "stringArray"  .= stringArray
+                                                 _              -> "type"         .= _type
                         in object $ ("type" .= _type) : [field]
