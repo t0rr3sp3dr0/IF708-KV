@@ -21,12 +21,17 @@ keyGet mvar key = do
 keyPost :: MonadIO m => MVar ANode -> Text -> Value -> m Value
 keyPost mvar key value = do
     node <- liftIO (takeMVar mvar)
-    error (show node)
     out <- liftIO (putMVar mvar (add (unpack key) value node))
     return $ newInteger 1
 
 keyPut :: MonadIO m => MVar ANode -> Text -> Value -> m Value
-keyPut mvar key value = return $ newInteger 2
+keyPut mvar key value = do
+    node <- liftIO (takeMVar mvar)
+    out <- liftIO (putMVar mvar (add (unpack key) value node))
+    return $ newInteger 1
 
 keyDelete :: MonadIO m => MVar ANode -> Text -> m Value
-keyDelete mvar _ = return $ newInteger 3
+keyDelete mvar key = do
+    node <- liftIO (takeMVar mvar)
+    out <- liftIO (putMVar mvar (add (unpack key) zero node))
+    return $ newInteger 1
