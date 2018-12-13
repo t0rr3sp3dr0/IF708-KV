@@ -18,14 +18,9 @@ module Types
     , newStringArray
     ) where
 
-import Data.Aeson hiding (Value) -- ((.:), (.:?), FromJSON (..), genericToJSON, ToJSON (..), genericParseJSON)
-import Data.Aeson.Types (Options (..), defaultOptions)
-import Data.List (stripPrefix)
-import Data.Function ((&))
-import Data.Maybe (fromMaybe)
-import Data.Text (Text, empty)
-import qualified Data.Text as T
-import GHC.Generics (Generic)
+import Data.Aeson hiding (Value)
+import Data.Text
+import GHC.Generics
 
 data Value = Value
     { _type :: Text         -- ^ Type of Value.
@@ -54,14 +49,14 @@ instance FromJSON Value where
     parseJSON = withObject "Value" $ \v -> do
             _type <- v .: "type"
             parseValue v (_type :: Text)
-        where parseValue v _type = case _type of "integer"      -> newInteger      <$> (v .: "integer")
-                                                 "string"       -> newString       <$> (v .: "string")
-                                                 "integerArray" -> newIntegerArray <$> (v .: "integerArray")
-                                                 "stringArray"  -> newStringArray  <$> (v .: "stringArray")
+        where parseValue v _type = case _type of "integer"      -> newInteger      <$> v .: "integer"
+                                                 "string"       -> newString       <$> v .: "string"
+                                                 "integerArray" -> newIntegerArray <$> v .: "integerArray"
+                                                 "stringArray"  -> newStringArray  <$> v .: "stringArray"
 
 instance ToJSON Value where
     toJSON Value{..} = let field = case _type of "integer"      -> "integer"      .= integer
                                                  "string"       -> "string"       .= string
                                                  "integerArray" -> "integerArray" .= integerArray
                                                  "stringArray"  -> "stringArray"  .= stringArray
-                        in object $ ("type" .= _type) : [ field ]
+                        in object $ ("type" .= _type) : [field]
