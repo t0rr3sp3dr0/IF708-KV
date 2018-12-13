@@ -6,20 +6,27 @@ module Handlers
     ) where
 
 import Data.Text
-
+import Lib
 import Types
+import Control.Concurrent.MVar
+import Control.Monad 
+import Control.Monad.IO.Class
 
-zero :: Value
-zero = Value empty 0 empty [] []
+keyGet :: MonadIO m => MVar ANode -> Text -> m Value
+keyGet mvar key = do 
+    node <- liftIO (readMVar mvar);
+    let out = (get (unpack key) node);
+    return out
 
-keyGet :: Monad m => Text -> m Value
-keyGet _ = return zero
+keyPost :: MonadIO m => MVar ANode -> Text -> Value -> m ()
+keyPost mvar key value = do
+    node <- liftIO (takeMVar mvar);
+    error (show node);
+    out <- liftIO (putMVar mvar (add (unpack key) value node)); 
+    return ()
 
-keyPost :: Monad m => Text -> Value -> m ()
-keyPost _ _ = return ()
+keyPut :: MonadIO m => MVar ANode -> Text -> Value -> m ()
+keyPut mvar key value = return ()
 
-keyPut :: Monad m => Text -> Value -> m ()
-keyPut _ _ = return ()
-
-keyDelete :: Monad m => Text -> m ()
-keyDelete _ = return ()
+keyDelete :: MonadIO m => MVar ANode -> Text -> m ()
+keyDelete mvar _ = return ()

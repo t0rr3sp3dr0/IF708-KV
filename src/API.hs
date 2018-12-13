@@ -13,11 +13,7 @@
 module API
     ( ServerConfig (..)
     , KVBackend (..)
-    , createKVClient
     , runKVServer
-    , runKVClient
-    , runKVClientWithManager
-    , KVClient
     , KVAPI
     ) where
 
@@ -43,6 +39,7 @@ import Servant.Client (BaseUrl (..), ClientM, Scheme (Http), ServantError, clien
 import Web.HttpApiData
 
 import Types
+import Lib
 
 -- For the form data code generation.
 lookupEither :: FromHttpApiData b => Text -> [(Text, Text)] -> Either String b
@@ -126,23 +123,6 @@ data KVBackend m = KVBackend
     , keyPut :: Text -> Value -> m ()  -- ^ Puts object.
     , keyDelete :: Text -> m ()        -- ^ Deletes object.
     }
-
-type KVClient = ClientM
-
-createKVClient :: KVBackend KVClient
-createKVClient = KVBackend{..}
-    where (coerce -> keyGet) :<|> (coerce -> keyPost) :<|> (coerce -> keyPut) :<|> (coerce -> keyDelete) = client (Proxy :: Proxy KVAPI)
-
--- | Run requests in the KVClient monad.
-runKVClient :: ServerConfig -> KVClient a -> IO (Either ServantError a)
-runKVClient clientConfig cl = do
-    manager <- liftIO $ newManager defaultManagerSettings
-    runKVClientWithManager manager clientConfig cl
-
--- | Run requests in the KVClient monad using a custom manager.
-runKVClientWithManager :: Manager -> ServerConfig -> KVClient a -> IO (Either ServantError a)
-runKVClientWithManager manager clientConfig cl =
-    runClientM cl (mkClientEnv manager $ BaseUrl Http (configHost clientConfig) (configPort clientConfig) "")
 
 -- | Run the KV server at the provided host and port.
 runKVServer :: MonadIO m => ServerConfig -> KVBackend Handler -> m ()
